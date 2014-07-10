@@ -10,6 +10,10 @@
 """
 import re
 import errno
+import contextlib
+from java.lang import ClassLoader
+from java.io import InputStreamReader, BufferedReader
+import os.path
 from collections import deque
 from threading import Lock
 from jinja2._compat import text_type, string_types, implements_iterator, \
@@ -144,14 +148,14 @@ def import_string(import_name, silent=False):
 
 
 def open_if_exists(filename, mode='rb'):
-    """Returns a file descriptor for the filename if that file exists,
+    """Returns a BufferedReader for the filename if that file exists,
     otherwise `None`.
     """
-    try:
-        return open(filename, mode)
-    except IOError as e:
-        if e.errno not in (errno.ENOENT, errno.EISDIR):
-            raise
+    _, f = os.path.split(filename)
+    loader = ClassLoader.getSystemClassLoader()
+    stream = loader.getResourceAsStream(os.path.join("templates", f))
+    reader = BufferedReader(InputStreamReader(stream))
+    return reader
 
 
 def object_type_repr(obj):

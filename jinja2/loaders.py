@@ -172,17 +172,18 @@ class FileSystemLoader(BaseLoader):
             if f is None:
                 continue
             try:
-                contents = f.read().decode(self.encoding)
+                line = f.readLine()
+                contents = []
+                while line is not None:
+                    contents.append(line.decode(self.encoding))
+                    line = f.readLine()
+                contents = '\n'.join(contents)
             finally:
                 f.close()
 
-            mtime = path.getmtime(filename)
 
             def uptodate():
-                try:
-                    return path.getmtime(filename) == mtime
-                except OSError:
-                    return False
+                return True
             return contents, filename, uptodate
         raise TemplateNotFound(template)
 
