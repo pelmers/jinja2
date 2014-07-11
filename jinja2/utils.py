@@ -153,7 +153,7 @@ def open_if_exists(filename, mode='rb'):
     """
     _, f = os.path.split(filename)
     loader = ClassLoader.getSystemClassLoader()
-    stream = loader.getResourceAsStream(os.path.join("templates", f))
+    stream = loader.getResourceAsStream("templates/" + f)
     reader = BufferedReader(InputStreamReader(stream))
     return reader
 
